@@ -1,12 +1,44 @@
-# Jam.py Application Builder (compatible with Python3)
+# Jam.py Application for Postfix Aliases (compatible with Python3)
 
 [![Build Status](https://api.travis-ci.org/platipusica/jam-py.png?branch=master)](http://travis-ci.org/platipusica/jam-py)
-[![Coverage Status](https://coveralls.io/repos/github/platipusica/jam-py/badge.svg?branch=master)](https://coveralls.io/github/platipusica/jam-py?branch=master)
 ![Python versions](https://img.shields.io/pypi/pyversions/python3-saml.svg)
 
-Make a stunning database apps for your business really fast, for **free**. This is the Demo for **Heroku** which you can access from here:
+The Problem
+=============
 
-https://jampy.herokuapp.com/
+Postfix mail server can be configured with a number of virtual maps, normally files in some folder called  domainxyz.virtual
+The file is just a plain text file maintained normally by the System Administrator. The file is converted into the Postfix binary format with: 
+
+postmap domainxyz.virtual
+
+The result is domainxyz.db file which is used by Posfix.
+
+Now, imagine to maintain a hundreds of this files in an secure and source controlled fashion! Plus, imagine that this can be offloaded to the Junior Support Personnel or the Business Owner who 'owns' the domains in question!
+
+The Solution
+=================
+
+The Jam.py Postfix Aliases Application is my take on solving the problem of:
+
+* The Application Access in an secure and monitored way
+* The Complete Actions History on any virtual domain (or any other) 
+* Virtual domain file Header and Footer (as bulk entries)
+* Individual email aliases records on/off (with bulk entries)
+* Custom Comments (ie Incident in ServiceNow) 
+* Search on any records
+* Saving the content in Postmap binary file
+
+
+How does it work?
+=================
+
+Please visit Heroku App:
+
+TBA
+
+
+About Jam.py
+=================
 
 With Jam.py you can create, customise, test and share awesome, fast, event-driven applications for SQLite, Oracle, MySQL, PostgreSQL and Firebird. All of that for free and no vendor lock-in!
 
