@@ -32,6 +32,9 @@ The Jam.py Postfix Aliases Application is my take on solving the problem of:
 How does it work?
 =================
 
+This page is jusst a copy of https://github.com/platipusica/jampy-demo
+for now as an tempate. The Aliases App will be done soon.
+
 Please visit Heroku App:
 
 TBA
