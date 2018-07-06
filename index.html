@@ -1,19 +1,30 @@
 <!DOCTYPE html>
- 
 <html lang="en">
   <head>
-    <meta charset="utf-8">  
-    <title>Jam.py demo</title>
+    <meta charset="utf-8">
+    <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/static/img/j.png" type="image/png">
+    <link rel="icon" href="/jam/img/j.png" type="image/png">
 
-    <link href="jam/css/bootstrap-cerulean.css" rel="stylesheet">            <!--do not modify-->
+    <link href="jam/css/bootstrap.css" rel="stylesheet">
+    <!--<link href="jam/css/bootstrap-cerulean.css" rel="stylesheet"> -->
+    <!--<link href="jam/css/bootstrap-amelia.css" rel="stylesheet">-->
+    <!--<link href="jam/css/bootstrap-flatly.css" rel="stylesheet"> -->
+    <!--<link href="jam/css/bootstrap-journal.css" rel="stylesheet">-->
+    <!--<link href="jam/css/bootstrap-slate.css" rel="stylesheet">-->
+    <!--<link href="jam/css/bootstrap-united.css" rel="stylesheet">-->
+    <!--<link href="jam/css/bootstrap-cosmo.css" rel="stylesheet">-->
+    <!--<link href="jam/css/bootstrap-readable.css" rel="stylesheet">-->
+    <!--<link href="jam/css/bootstrap-spacelab.css" rel="stylesheet">-->
+
     <link href="jam/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="jam/css/bootstrap-modal.css" rel="stylesheet">
     <link href="jam/css/datepicker.css" rel="stylesheet">
-    <link href="jam/css/jam.css" rel="stylesheet">                  <!--do not modify-->   
+    <link href="jam/css/jam.css" rel="stylesheet">
+    <!--<link href="jam/css/jam12.css" rel="stylesheet">    -->
     <link href="css/project.css" rel="stylesheet">
- 
+  </head>
+
   <body>
     <div id="container" class="container">
         <div class="row-fluid">
@@ -25,31 +36,24 @@
                 <a href="#" id="log-out" style="display: none">&nbsp;&nbsp;&nbsp;Log out</a>
             </div>
         </div>
-        <div class="container" style="width: auto;">        
-            <div id="taskmenu" class="navbar" style="display: none">        
+        <div class="container" style="width: auto;">
+            <div id="taskmenu" class="navbar" style="display: none">
                 <div class="navbar-inner">
                     <ul id="menu" class="nav">
                     </ul>
-                    <ul id="menu-right" class="nav pull-right">
-                        <li id="admin"><a href="#">Application builder</a></li>
-                        <li id="about"><a href="#">About</a></li>              
-                        <li id="help"><a href="http://jam-py.com/docs" target="_blank">Help</a></li>                                                
-                        <li id="github"><a href="https://github.com/jam-py/jam-py" target="_blank">Github</a></li>                                                
-                        <li id="jam"><a href="http://jam-py.com/" target="_blank">Jam.py</a></li>                        
-                    </ul>
                 </div>
-            </div>            
+            </div>
         </div>
         <div id="content">
         </div>
     </div>
 
     <div class="templates" style="display: none">
-        
+
         <div class="default-view">
             <div class="form-body">
-                <div class="view-table"></div>
-                <div class="view-detail"></div>
+                <div class="view-table">
+                </div>
             </div>
             <div class="form-footer">
                 <button id="delete-btn" class="btn expanded-btn pull-left" type="button">
@@ -72,10 +76,10 @@
             </div>
         </div>
 
-        <div class="default-edit">
+        <div class="default-edit default-details-edit">
             <div class="form-body">
-                <div class="edit-body"></div>
-                <div class="edit-detail"></div>
+                <div class="edit-body">
+                </div>
             </div>
             <div class="form-footer">
                 <button type="button" id="ok-btn" class="btn btn-ary expanded-btn">
@@ -86,7 +90,7 @@
                 </button>
             </div>
         </div>
- 
+
         <div class="default-param">
             <div class="form-body">
                 <div class="edit-body">
@@ -123,39 +127,15 @@
             </div>
         </div>
 
-        <div class="invoices-edit">
+        <div class="catalogs-view">
             <div class="form-body">
-                <div class="edit-body"></div>
-                <div class="edit-detail"></div>
-            </div>
-            <div class="form-footer">
-                <button id="select-btn" class="btn expanded-btn pull-left" type="button">
-                    <i class="icon-edit"></i> Select
-                </button>                    
-                <button type="button" id="ok-btn" class="btn btn-ary expanded-btn">
-                    <i class="icon-ok"></i> OK<small class="muted">&nbsp;[Ctrl+Enter]</small>
-                </button>
-                <button type="button" id="cancel-btn" class="btn expanded-btn">
-                    <i class="icon-remove"></i> Cancel
-                </button>
-            </div>
-        </div>
-
-        <div class="customers-view">
-            <div class="form-body">
-                <div class="view-table"></div>
-                <div class="view-detail"></div>
+                <div class="view-table">
+                </div>
             </div>
             <div class="form-footer">
                 <button id="delete-btn" class="btn expanded-btn pull-left" type="button">
                     <i class="icon-trash"></i> Delete<small class="muted">&nbsp;[Ctrl+Del]</small>
                 </button>
-                <button style="display: none" id="email-btn" class="btn expanded-btn" type="button">
-                    <i class="icon-pencil"></i> Send email
-                </button>                
-                <button style="display: none" id="print-btn" class="btn expanded-btn" type="button">
-                    <i class="icon-print"></i> Print
-                </button>                
                 <div id="report-btn" class="btn-group dropup">
                     <a class="btn expanded-btn dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="icon-print"></i> Reports
@@ -164,6 +144,78 @@
                     <ul class="dropdown-menu bottom-up">
                     </ul>
                 </div>
+                <button id="save-btn" class="btn expanded-btn" type="button">
+                    <i class="icon-file"></i> Save
+                </button>
+                <button id="edit-btn" class="btn expanded-btn" type="button">
+                    <i class="icon-edit"></i> Edit
+                </button>
+                <button id="new-btn" class="btn expanded-btn" type="button">
+                    <i class="icon-plus"></i> New<small class="muted">&nbsp;[Ctrl+Ins]</small>
+                </button>
+            </div>
+        </div>
+        <div class="catalogs-new-view">
+            <div class="form-body">
+                <div class="form-header">
+                    <div class="btn-group">
+                        <a class="btn expanded-btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            Action
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a id="new-btn" href="#">
+                                <i class="icon-plus"></i> New<small class="muted">&nbsp;[Ctrl+Ins]</small>
+                            </a></li>
+                            <li><a id="edit-btn" href="#">
+                                <i class="icon-edit"></i> Edit
+                            </a></li>
+                            <li class="divider"></li>
+                            <li><a id="delete-btn" href="#">
+                                <i class="icon-trash"></i> Delete<small class="muted">&nbsp;[Ctrl+Del]</small>
+                            </a></li>                                    
+                        </ul>
+                    </div>                            
+                    <div id="report-btn" class="btn-group dropup">
+                        <a class="btn expanded-btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="icon-print"></i> Reports
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu bottom-up">
+                        </ul>
+                    </div>
+                    <button style="display: none" id="email-btn" class="btn expanded-btn" type="button">
+                        <i class="icon-pencil"></i> Send email
+                    </button>                
+                    <button style="display: none" id="print-btn" class="btn expanded-btn" type="button">
+                        <i class="icon-print"></i> Print
+                    </button>                
+                </div>
+                <div class="view-table">
+                </div>
+            </div>
+        </div>
+
+        <div class="journals-view">
+            <div class="form-body">
+                <div class="view-table">
+                </div>
+            </div>
+            <div class="form-footer">
+                <button id="delete-btn" class="btn expanded-btn pull-left" type="button">
+                    <i class="icon-trash"></i> Delete<small class="muted">&nbsp;[Ctrl+Del]</small>
+                </button>
+                <div id="report-btn" class="btn-group dropup">
+                    <a class="btn expanded-btn dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="icon-print"></i> Reports
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu bottom-up">
+                    </ul>
+                </div>
+                <button id="filter-btn" class="btn expanded-btn" type="button">
+                    <i class="icon-filter"></i> Filter
+                </button>
                 <button id="edit-btn" class="btn expanded-btn" type="button">
                     <i class="icon-edit"></i> Edit
                 </button>
@@ -173,27 +225,29 @@
             </div>
         </div>
 
-        <div class="dashboard-view">
-            <div class="row-fluid">
-                <div class="span6">                
-                    <canvas id="cutomers-canvas"></canvas>                
-                    <div id="customer-table"></div>
-                </div>                            
-                <div class="span6">                        
-                    <canvas id="tracks-canvas"></canvas>
-                    <div id="tracks-table"></div>
-                </div>                
+        <div class="modal-header">
+            <div class="header-title"></div>
+            <div class="header-refresh-btn"></div>
+            <div class="header-history-btn"></div>
+            <div class="header-selected">
+                <a id="selected-value" href="#"></a>
+            </div>            
+            <div class="header-filter">
+                <h5 class='filter-text'></h5>
             </div>
-        </div>
-
-        <div class="about">
-            <a href="http://jam-py.com/" target="_blank"><h3>Jam.py</h3></a>
-            <p>Welcome to Jam.py Demo application with sqlite3 Database.</p>
-            <p>Please review the Application Builder, Task Client Module, where the most JS code is.</p>            
-            <p>Everything else is pretty much automated, no coding involved!</p>            
-            <p>Thanks for visiting</p>
-            <p>Andrew Yushev</p>
-            <p>2015-2018</p>
+            <div class="header-search">
+                <form id="search-form" class="form-inline pull-right">
+                    <label  class="control-label" for="search-input">Search by 
+                        <span class="label" id="search-fieldname"></span>
+                    </label>
+                    <input id="search-input" type="text" class="input-medium search-query" autocomplete="off">
+                    <a id="search-field-info" href="#" tabindex="-1">
+                        <span class="badge">?</span>
+                    </a>
+                </form>
+            </div>
+            <div class="header-print-btn"></div>
+            <div class="header-close-btn"></div>
         </div>
 
         <form id="login-form" target="dummy" class="form-horizontal" data-caption="Log in" style="margin: 10px 0 0; padding: 0px">
@@ -206,14 +260,13 @@
             <div class="control-group">
                 <label class="control-label" for="inputPassword">Password</label>
                 <div class="controls">
-                    <input type="password" id="inputPassword" name="password" tabindex="2" placeholder="password" autocomplete="on">
+                    <input type="password" id="inputPassword" name="password" tabindex="2" placeholder="password">
                 </div>
             </div>
-            <div class="form-footer">
+            <div class="modal-footer">
                 <input type="submit" class="btn expanded-btn pull-right" id="login-btn" value="OK" tabindex="3">
             </div>
         </form>
-        
     </div>
     <iframe src="dummy.html" name="dummy" style="display: none"></iframe>
 
@@ -222,13 +275,13 @@
     <script src="jam/js/bootstrap-modal.js"></script>
     <script src="jam/js/bootstrap-modalmanager.js"></script>
     <script src="jam/js/bootstrap-datepicker.js"></script>
+    <script src="jam/js/md5.js"></script>
+    <script src="jam/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="jam/js/jam.js"></script>
-    <script src="static/js/Chart.min.js"></script>
-
 
     <script>
     $(document).ready(function(){
-        task.load();
+        task.load()
       });
     </script>
 
