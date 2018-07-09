@@ -6,14 +6,32 @@
 The Problem
 =============
 
-Postfix mail server can be configured with a number of virtual maps, normally files in some folder called  domainxyz.virtual
+Postfix mail server can be configured with a number of virtual maps, normally files in some folder called  domainxyz.virtual.
 The file is just a plain text file maintained normally by the System Administrator. The file is converted into the Postfix binary format with: 
 
+```
 postmap domainxyz.virtual
+```
 
-The result is domainxyz.db file which is used by Posfix.
+The result is domainxyz.db 'hashed' file which is used by Posfix. 
 
-Now, imagine to maintain a hundreds of this files in an secure and source controlled fashion! Plus, imagine that this can be offloaded to the Junior Support Personnel or the Business Owner who 'owns' the domains in question!
+In /etc/postfix/main.cf
+
+the virtual aliases files would look something like:
+
+```
+.
+.
+virtual_alias_maps = ldap:/etc/postfix/ldap-maps.cf 
+  hash:/etc/postfix/virtual_maps/domain1.virtual 
+  hash:/etc/postfix/virtual_maps/domain2.virtual 
+  .
+  .
+  
+```
+
+
+Now, imagine to maintain a hundreds of this files in an secure and source controlled fashion! Plus, imagine that this can be offloaded to the Junior Support Personnel or the Business Owner who 'owns' the domains in question so he/she can update the aliases by themself.
 
 The Solution
 =================
@@ -32,7 +50,7 @@ The Jam.py Postfix Aliases Application is my take on solving the problem of:
 How does it work?
 =================
 
-This page is jusst a copy of https://github.com/platipusica/jampy-demo
+This page is just a copy of https://github.com/platipusica/jampy-demo
 for now as an tempate. The Aliases App will be done soon.
 
 Please visit Heroku App:
