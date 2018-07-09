@@ -58,10 +58,11 @@ Please visit Heroku App (WIP):
 
 http://jampy-aliases.herokuapp.com/
 
-Here, you're presented with the first Domain (Domain1) aliases, open Catalog Menu and select Domain2, etc. On the Admin Menu is everthing what normal User can't access, Footers, Headers and Files Path. The File Path here is just an example for each Domain in question.
-After some domain is updated, new entry added, deleted or alias disabled, by click on "Save", the Application automaticaly creates the virtual file and executes postmap for the same file.
+Here, you're presented with the first Domain (Domain1) aliases. Open Catalog Menu and select Domain2, etc. On the Admin Menu is everthing what normal User shouldn't access, Footers, Headers and Files Path. The File Path here is just an example for each Domain in question. We need a Header to *Warn* the console users who might manually update the file, and we also need Footer to add any extra aliases normal User can't see (like mailman aliases, etc).
 
-This is still WIP so bear with me. The App will change soon.
+After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automaticaly creates the new virtual file (overwrites the old one), and executes postmap for the same file.
+
+This is still WIP so bear with me.
 
 About Jam.py
 =================
