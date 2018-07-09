@@ -33,7 +33,8 @@ The result is domainxyz.db 'hashed' file which is used by Postfix.
 
 
 
-Now, imagine to maintain a hundreds of this files in an secure and source controlled fashion! Plus, imagine that this can be offloaded to the Junior Support Personnel or the Business Owner who 'owns' the domains in question so she/he can update the aliases by themself.
+Now, imagine to maintain a hundreds of this files in an secure and source controlled fashion! That is a lot of work, and prone to errors, typos and what not.
+However, imagine that this can be offloaded to the Junior Support Personnel or the Business Owner who 'owns' the domains in question, so she/he can update the aliases by themself! Interested? 
 
 The Solution
 =================
@@ -42,8 +43,8 @@ The Jam.py Postfix Aliases Application is my take on solving the problem of:
 
 * The Application Access in an secure and monitored way over the Web
 * The Complete Actions History on any virtual domain (or any other part of App) 
-* Virtual domain file Header and Footer (as bulk entries)
-* Individual email aliases records on/off (with bulk entries)
+* Virtual domain file Header and Footer (as bulk entries, only Admin can modify)
+* Individual email aliases records on/off (with bulk entries, User can modify)
 * Custom Comments (ie Incident in Service Ticketing Software) 
 * Search on any records
 * Saving the content in Postmap binary file
@@ -53,13 +54,14 @@ The Jam.py Postfix Aliases Application is my take on solving the problem of:
 How does it work?
 =================
 
-This page is just a copy of https://github.com/platipusica/jampy-demo
-for now as an template. The Aliases App will be done soon.
+Please visit Heroku App (WIP):
 
-Please visit Heroku App:
+http://jampy-aliases.herokuapp.com/
 
-TBA
+Here, you're presented with the first Domain (Domain1) aliases, open Catalog Menu and select Domain2, etc. On the Admin Menu is everthing what normal User can't access, Footers, Headers and Files Path. The File Path here is just an example for each Domain in question.
+After some domain is updated, new entry added, deleted or alias disabled, by click on "Save", the Application automaticaly creates the virtual file and executes postmap for the same file.
 
+This is still WIP so bear with me. The App will change soon.
 
 About Jam.py
 =================
@@ -132,7 +134,7 @@ sudo pip install jam.py
 ```
 at the shell prompt. If you’re using Windows, start a command shell with administrator privileges and run the command:
 ```
-pip install jam.py. 
+pip install jam.py
 ```
 This will install Jam.py in your Python installation’s site-packages directory.
 
