@@ -42,7 +42,7 @@ def sqlite_upper(value_):
     except:
         pass
 
-def connect(database, user, password, host, port, encoding):
+def connect(database, user, password, host, port, encoding, server):
     connection = sqlite3.connect(database)
     connection.create_function("LOWER", 1, sqlite_lower)
     connection.create_function("UPPER", 1, sqlite_upper)
@@ -53,7 +53,9 @@ def connect(database, user, password, host, port, encoding):
 def get_lastrowid(cursor):
     return cursor.lastrowid
 
-def get_select(query, start, end, fields):
+def get_select(query, fields_clause, from_clause, where_clause, group_clause, order_clause, fields):
+    start = fields_clause
+    end = ''.join([from_clause, where_clause, group_clause, order_clause])
     offset = query['__offset']
     limit = query['__limit']
     result = 'SELECT %s FROM %s' % (start, end)
@@ -95,7 +97,7 @@ def create_table_sql(table_name, fields, gen_name=None, foreign_fields=None):
         if field['primary_key']:
             primary_key = field['field_name']
             sql += ' PRIMARY KEY'
-        if field['default_value']:
+        if field['default_value'] and not field['primary_key']:
             if field['data_type'] == TEXT:
                 sql += " DEFAULT '%s'" % field['default_value']
             else:
@@ -131,9 +133,9 @@ def add_field_sql(table_name, field):
         (table_name, field['field_name'], FIELD_TYPES[field['data_type']])
     if field['default_value']:
         if field['data_type'] == TEXT:
-            sql += " DEFAULT '%s'" % field['default_value']
+            result += " DEFAULT '%s'" % field['default_value']
         else:
-            sql += ' DEFAULT %s' % field['default_value']
+            result += ' DEFAULT %s' % field['default_value']
     return result
 
 def del_field_sql(table_name, field):
@@ -142,16 +144,13 @@ def del_field_sql(table_name, field):
 def change_field_sql(table_name, old_field, new_field):
     return ''
 
-def get_sequence_name(table_name):
-    return None
-
 def next_sequence_value_sql(table_name):
     return None
 
 def restart_sequence_sql(table_name, value):
     pass
 
-def set_literal_case(name):
+def identifier_case(name):
     return name.upper()
 
 def get_table_names(connection):
