@@ -1,2 +1,2 @@
 gunicorn
-#jam.py
+jam.py==5.4.15
