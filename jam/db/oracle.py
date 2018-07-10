@@ -32,14 +32,13 @@ FIELD_TYPES = {
     KEYS: 'BLOB'
 }
 
-def connect(database, user, password, host, port, encoding):
+def connect(database, user, password, host, port, encoding, server):
     if database and user and password:
         return cx_Oracle.connect(user=user, password=password, dsn=database)
     elif database:
         return cx_Oracle.connect(dsn=database)
 
-def get_lastrowid(cursor):
-    return None
+get_lastrowid = None
 
 def get_fields(query, fields, alias):
     sql = ''
@@ -57,8 +56,9 @@ def get_fields(query, fields, alias):
     sql = sql[:-2]
     return sql
 
-
-def get_select(query, start, end, fields):
+def get_select(query, fields_clause, from_clause, where_clause, group_clause, order_clause, fields):
+    start = fields_clause
+    end = ''.join([from_clause, where_clause, group_clause, order_clause])
     offset = query['__offset']
     limit = query['__limit']
     result = 'SELECT %s FROM %s' % (start, end)
@@ -202,9 +202,6 @@ def change_field_sql(table_name, old_field, new_field):
 def param_literal():
     return '?'
 
-def get_sequence_name(table_name):
-    return '%s_GEN' % table_name
-
 def next_sequence_value_sql(gen_name):
     return 'SELECT "%s".NEXTVAL FROM DUAL' % gen_name
 
@@ -214,7 +211,7 @@ def restart_sequence_sql(gen_name, value):
     result.append('CREATE SEQUENCE "%s" START WITH %s' % (gen_name, value))
     return result
 
-def set_literal_case(name):
+def identifier_case(name):
     return name.upper()
 
 def get_table_names(connection):

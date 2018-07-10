@@ -34,13 +34,14 @@ FIELD_TYPES = {
     KEYS: 'BYTEA'
 }
 
-def connect(database, user, password, host, port, encoding):
+def connect(database, user, password, host, port, encoding, server):
     return psycopg2.connect(database=database, user=user, password=password, host=host, port=port)
 
-def get_lastrowid(cursor):
-    return None
+get_lastrowid = None
 
-def get_select(query, start, end, fields):
+def get_select(query, fields_clause, from_clause, where_clause, group_clause, order_clause, fields):
+    start = fields_clause
+    end = ''.join([from_clause, where_clause, group_clause, order_clause])
     offset = query['__offset']
     limit = query['__limit']
     result = 'SELECT %s FROM %s' % (start, end)
@@ -96,15 +97,12 @@ def create_table_sql(table_name, fields, gen_name=None, foreign_fields=None):
     sql = 'CREATE TABLE "%s"\n(\n' % table_name
     lines = []
     for field in fields:
-        line = ''
-        if field['primary_key']:
-            primary_key = field['field_name']
-            line += '"%s" %s PRIMARY KEY DEFAULT NEXTVAL(\'"%s"\')' % \
-                (field['field_name'], FIELD_TYPES[field['data_type']], seq_name)
-        else:
-            line += '"%s" %s' % (field['field_name'], FIELD_TYPES[field['data_type']])
+        line = '"%s" %s' % (field['field_name'], FIELD_TYPES[field['data_type']])
         if field['size'] != 0 and field['data_type'] == TEXT:
             line += '(%d)' % field['size']
+        if field['primary_key']:
+            primary_key = field['field_name']
+            line += ' PRIMARY KEY DEFAULT NEXTVAL(\'"%s"\')' % seq_name
         if field['default_value'] and not field['primary_key']:
             if field['data_type'] == TEXT:
                 line += " DEFAULT '%s'" % field['default_value']
@@ -177,16 +175,13 @@ def change_field_sql(table_name, old_field, new_field):
         result.append(sql)
     return result
 
-def get_sequence_name(table_name):
-    return '%s_ID_SEQ' % table_name
-
 def next_sequence_value_sql(gen_name):
     return 'SELECT NEXTVAL(\'"%s"\')' % gen_name
 
 def restart_sequence_sql(gen_name, value):
     return 'ALTER SEQUENCE "%s" RESTART WITH %d' % (gen_name, value)
 
-def set_literal_case(name):
+def identifier_case(name):
     return name.lower()
 
 def get_table_names(connection):
