@@ -20,7 +20,7 @@ from jam.dataset import *
 from jam.sql import *
 from jam.execute import process_request, execute_sql
 from jam.third_party.six import exec_, print_
-from werkzeug._compat import iteritems, iterkeys, text_type, string_types, to_bytes
+from werkzeug._compat import iteritems, iterkeys, text_type, string_types, to_bytes, to_unicode
 
 class ServerDataset(Dataset, SQL):
     def __init__(self, table_name='', soft_delete=True):
@@ -40,7 +40,20 @@ class ServerDataset(Dataset, SQL):
     def copy(self, filters=True, details=True, handlers=True):
         if self.master:
             raise DatasetException(u'A detail item can not be copied: %s' % self.item_name)
-        return self._copy(filters, details, handlers)
+        result = self._copy(filters, details, handlers)
+        return result
+
+    def free(self):
+        try:
+            for d in self.details:
+                d.__dict__ = {}
+            for f in self.filters:
+                f.field = None
+                f.__dict__ = {}
+            self.filters.__dict__ = {}
+            self.__dict__ = {}
+        except:
+            pass
 
     def _copy(self, filters=True, details=True, handlers=True):
         result = super(ServerDataset, self)._copy(filters, details, handlers)
@@ -178,10 +191,7 @@ class ServerDataset(Dataset, SQL):
         if result is None:
             result = self.apply_delta(delta, safe)
         return result
-    def apply_changes(self, data, safe):
-        self.abort(u'This is a demo version with limited functionality. \
-            You are not allowed to write changes to the database. \
-            The full-featured version is located in the demo folder of the Jam.py package.')
+
     def update_deleted(self):
         if self._is_delta and len(self.details):
             rec_no = self.rec_no
@@ -395,14 +405,19 @@ class Report(AbstrReport):
         result.prepare_params()
         return  result
 
+    def free(self):
+        for p in self.params:
+            p.field = None
+        self.__dict__ = {}
+
     def print_report(self, param_values, url, ext=None, safe=False):
         if safe and not self.can_view():
             raise Exception(self.task.language('cant_view') % self.item_caption)
-        #~ if not self.template_content:
-            #~ self.parse_template()
-        copy_report = self.copy()
-        copy_report.ext = ext
-        return copy_report.generate(param_values, url, ext)
+        copy = self.copy()
+        copy.ext = ext
+        result = copy.generate(param_values, url, ext)
+        copy.free()
+        return result
 
     def generate_file_name(self, ext=None):
         if not ext:
@@ -768,7 +783,7 @@ class ConCounter(object):
 
 
 class AbstractServerTask(AbstrTask):
-    def __init__(self, app, name, caption, js_filename, db_type,
+    def __init__(self, app, name, caption, js_filename, db_type, db_server = '',
         db_database = '', db_user = '', db_password = '', host='', port='',
         encoding='', con_pool_size=1, mp_pool=False, persist_con=False):
         AbstrTask.__init__(self, None, None, None, None)
@@ -781,6 +796,7 @@ class AbstractServerTask(AbstrTask):
         self.item_caption = caption
         self.js_filename = js_filename
         self.db_type = db_type
+        self.db_server = db_server
         self.db_database = db_database
         self.db_user = db_user
         self.db_password = db_password
@@ -820,7 +836,7 @@ class AbstractServerTask(AbstrTask):
         pid = None
         for i in range(con_count):
             p = threading.Thread(target=process_request, args=(pid, self.item_name,
-                self.queue, self.db_type, self.db_database, self.db_user,
+                self.queue, self.db_type, self.db_server, self.db_database, self.db_user,
                 self.db_password, self.db_host, self.db_port,
                 self.db_encoding, self.mod_count))
             p.daemon = True
@@ -832,14 +848,15 @@ class AbstractServerTask(AbstrTask):
         pid = os.getpid()
         for i in range(con_count):
             p = multiprocessing.Process(target=process_request, args=(pid, self.item_name,
-                self.mp_queue, self.db_type, self.db_database, self.db_user,
+                self.mp_queue, self.db_type, self.db_server, self.db_database, self.db_user,
                 self.db_password, self.db_host, self.db_port,
                 self.db_encoding, self.mod_count))
             p.daemon = True
             p.start()
 
     def create_connection(self):
-        return self.db_module.connect(self.db_database, self.db_user, self.db_password, self.db_host, self.db_port, self.db_encoding)
+        return self.db_module.connect(self.db_database, self.db_user, \
+            self.db_password, self.db_host, self.db_port, self.db_encoding, self.db_server)
 
     def send_to_pool(self, queue, result_queue, command, params=None, call_proc=False, select=False):
         request = {}
@@ -948,68 +965,16 @@ class AbstractServerTask(AbstrTask):
                 print(e)
         return converted
 
-    def copy_database(self, dbtype, database=None, user=None, password=None,
-        host=None, port=None, encoding=None, limit = 4048):
-        connection = None
-        db_module = db_modules.get_db_module(dbtype)
-        for group in self.items:
-            for it in group.items:
-                if it.item_type != 'report':
-                    item = it.copy(handlers=False, filters=False, details=False)
-                    if item.table_name and not item.virtual_table:
-                        self.execute('DELETE FROM "%s"' % item.table_name)
-                        item.open(expanded=False, open_empty=True)
-                        params = {'__fields': [], '__filters': [], '__expanded': False, '__offset': 0, '__limit': 0}
-                        sql = item.get_record_count_query(params, db_module)
-                        connection, (result, error) = \
-                        execute_sql(db_module, database, user, password,
-                            host, port, encoding, connection, sql,
-                            params=None, select=True)
-                        record_count = result[0][0]
-                        loaded = 0
-                        max_id = 0
-                        if record_count:
-                            while True:
-                                params['__offset'] = loaded
-                                params['__limit'] = limit
-                                sql = item.get_select_statement(params, db_module)
-                                connection, (result, error) = \
-                                execute_sql(db_module, database, user, password,
-                                    host, port, encoding, connection, sql,
-                                    params=None, select=True)
-                                if not error:
-                                    for i, r in enumerate(result):
-                                        item.append()
-                                        j = 0
-                                        for field in item.fields:
-                                            if not field.master_field:
-                                                field.value = r[j]
-                                                j += 1
-                                        if item._primary_key_field.value > max_id:
-                                            max_id = item._primary_key_field.value
-                                        item.post()
-                                    item.apply()
-                                else:
-                                    raise Exception(error)
-                                records = len(result)
-                                loaded += records
-                                print('coping table %s: %d%%' % (item.item_name, int(loaded * 100 / record_count)))
-                                if records == 0 or records < limit:
-                                    break
-                            if item.gen_name:
-                                sql = self.db_module.restart_sequence_sql(item.gen_name, max_id + 1)
-                                self.execute(sql)
-
 class DebugException(Exception):
     pass
 
 class Task(AbstractServerTask):
     def __init__(self, app, name, caption, js_filename,
-        db_type, db_database = '', db_user = '', db_password = '',
+        db_type, db_server = '', db_database = '', db_user = '', db_password = '',
         host='', port='', encoding='', con_pool_size=4, mp_pool=True,
         persist_con=True):
         AbstractServerTask.__init__(self, app, name, caption, js_filename,
-            db_type, db_database, db_user, db_password,
+            db_type, db_server, db_database, db_user, db_password,
             host, port, encoding, con_pool_size, mp_pool, persist_con)
         self.on_created = None
         self.on_login = None
@@ -1019,12 +984,108 @@ class Task(AbstractServerTask):
         for key, value in iteritems(self.__dict__):
             self.init_dict[key] = value
 
+    def drop_indexes(self):
+        from jam.adm_server import drop_indexes_sql
+        sqls = drop_indexes_sql(self.app.admin)
+        for s in sqls:
+            try:
+                self.execute(s)
+            except:
+                pass
+
+    def restore_indexes(self):
+        from jam.adm_server import restore_indexes_sql
+        sqls = restore_indexes_sql(self.app.admin)
+        for s in sqls:
+            try:
+                self.execute(s)
+            except:
+                pass
+
+    def copy_database(self, dbtype, database=None, user=None, password=None,
+        host=None, port=None, encoding=None, server=None, limit = 4096):
+
+        def convert_sql(item, sql, db_module):
+            new_case = item.task.db_module.identifier_case
+            old_case = db_module.identifier_case
+            if old_case('a') != new_case('a'):
+                if new_case(item.table_name) == item.table_name:
+                    sql = sql.replace(item.table_name, old_case(item.table_name))
+                for field in item.fields:
+                    if new_case(field.db_field_name) == field.db_field_name and \
+                        not field.db_field_name.upper() in common.SQL_KEYWORDS:
+                        field_name = '"%s"' % field.db_field_name
+                        sql = sql.replace(field_name, old_case(field_name))
+            return sql
+
+        print('copying started')
+        connection = None
+        db_module = db_modules.get_db_module(dbtype)
+        print('copying droping indexes')
+        self.drop_indexes()
+        try:
+            for group in self.items:
+                for it in group.items:
+                    if it.item_type != 'report':
+                        item = it.copy(handlers=False, filters=False, details=False)
+                        if item.table_name and not item.virtual_table:
+                            print('copying table %s' % item.item_name)
+                            params = {'__expanded': False, '__offset': 0, '__limit': 0, '__filters': []}
+                            rec_count, mess = item.get_record_count(params)
+                            sql = item.get_record_count_query(params, db_module)
+                            sql = convert_sql(item, sql, db_module)
+                            connection, (result, error) = \
+                            execute_sql(db_module, server, database, user, password,
+                                host, port, encoding, connection, sql,
+                                params=None, select=True)
+                            record_count = result[0][0]
+                            loaded = 0
+                            max_id = 0
+                            item.open(expanded=False, open_empty=True)
+                            if record_count and rec_count != record_count:
+                                self.execute('DELETE FROM "%s"' % item.table_name)
+                                while True:
+                                    params = {'__expanded': False, '__offset': loaded, '__limit': limit, '__fields': [], '__filters': []}
+                                    sql = item.get_select_statement(params, db_module)
+                                    sql = convert_sql(item, sql, db_module)
+                                    connection, (result, error) = \
+                                    execute_sql(db_module, server, database, user, password,
+                                        host, port, encoding, connection, sql,
+                                        params=None, select=True)
+                                    if not error:
+                                        for i, r in enumerate(result):
+                                            item.append()
+                                            j = 0
+                                            for field in item.fields:
+                                                if not field.master_field:
+                                                    field.set_data(r[j])
+                                                    j += 1
+                                            if item._primary_key and item._primary_key_field.value > max_id:
+                                                max_id = item._primary_key_field.value
+                                            item.post()
+                                        item.apply()
+                                    else:
+                                        raise Exception(error)
+                                    records = len(result)
+                                    loaded += records
+                                    print('copying table %s: %d%%' % (item.item_name, int(loaded * 100 / record_count)))
+                                    if records == 0 or records < limit:
+                                        break
+                                if item.gen_name:
+                                    sql = self.db_module.restart_sequence_sql(item.gen_name, max_id + 1)
+                                    self.execute(sql)
+        finally:
+            print('copying restoring indexes')
+            self.restore_indexes()
+        print('copying finished')
+
+
 class AdminTask(AbstractServerTask):
     def __init__(self, app, name, caption, js_filename,
-        db_type, db_database = '', db_user = '', db_password = '',
+        db_type, db_server = '', db_database = '', db_user = '', db_password = '',
         host='', port='', encoding=''):
         AbstractServerTask.__init__(self, app, name, caption, js_filename,
-            db_type, db_database, db_user, db_password, host, port, encoding, 2)
+            db_type, db_server, db_database, db_user, db_password, host, port, encoding, 2)
         filepath, filename = os.path.split(__file__)
         self.cur_path = filepath
         self.edited_docs = []

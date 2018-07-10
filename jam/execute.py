@@ -1,13 +1,15 @@
 import sys, os
 import datetime
+import traceback
 
 import jam.common as common
 import jam.db.db_modules as db_modules
 from werkzeug._compat import string_types
 
+
 def execute_select(cursor, db_module, command):
-#    print('')
-#    print(command)
+    #~ print('')
+    #~ print(command)
     try:
         cursor.execute(command)
     except Exception as x:
@@ -15,10 +17,10 @@ def execute_select(cursor, db_module, command):
         raise
     return db_module.process_sql_result(cursor.fetchall())
 
-def execute(cursor, command, params):
-#    print('')
-#    print(command)
-#    print(params)
+def execute(cursor, command, params=None):
+    #~ print('')
+    #~ print(command)
+    #~ print(params)
     try:
         if params:
             cursor.execute(command, params)
@@ -27,6 +29,11 @@ def execute(cursor, command, params):
     except Exception as x:
         print('\nError: %s\n command: %s\n params: %s' % (str(x), command, params))
         raise
+
+def info_from_error(err):
+    arr = str(err).split('\\n')
+    error = '<br>'.join(arr)
+    return '<div class="text-error">%s</div>' % error
 
 def execute_dll(cursor, db_module, command, params, messages):
     try:
@@ -43,12 +50,9 @@ def execute_dll(cursor, db_module, command, params, messages):
     except Exception as x:
         error = '\nError: %s\n command: %s\n params: %s' % (str(x), command, params)
         print(error)
-        if ddl:
-            arr = str(x).split('\\n')
-            error = '<br>'.join(arr)
-            messages.append('<div class="text-error">%s</div>' % error)
-            if db_module.DDL_ROLLBACK:
-                raise
+        messages.append(info_from_error(x))
+        if db_module.DDL_ROLLBACK:
+            raise
 
 def execute_command(cursor, db_module, command, params=None, select=False, ddl=False, messages=None):
     if select:
@@ -74,22 +78,33 @@ def process_delta(cursor, db_module, delta, master_rec_id, result):
                     d_params = db_module.process_sql_params(d_params, cursor)
                     execute(cursor, d_sql, d_params)
         if info:
-            rec_id = info['primary_key']
-            if info['inserted']:
-                if info['master_rec_id_index']:
-                    params[info['master_rec_id_index']] = master_rec_id
-                if not rec_id and info['primary_key_index'] >= 0:
-                    next_sequence_value_sql = db_module.next_sequence_value_sql(info['gen_name'])
+            rec_id = info.get('pk')
+            inserted = info.get('inserted')
+            if inserted:
+                master_pk_index = info.get('master_pk_index')
+                if master_pk_index:
+                    params[master_pk_index] = master_rec_id
+                pk_index = info.get('pk_index')
+                gen_name = info.get('gen_name')
+                if not rec_id and db_module.get_lastrowid is None and gen_name and \
+                    not pk_index is None and pk_index >= 0:
+                    next_sequence_value_sql = db_module.next_sequence_value_sql(gen_name)
                     if next_sequence_value_sql:
                         cursor.execute(next_sequence_value_sql)
                         rec = cursor.fetchone()
                         rec_id = rec[0]
-                        params[info['primary_key_index']] = rec_id
+                        params[pk_index] = rec_id
             if params:
                 params = db_module.process_sql_params(params, cursor)
             if command:
+                before = info.get('before_command')
+                if before:
+                    execute(cursor, before)
                 execute(cursor, command, params)
-            if info['inserted'] and not rec_id:
+                after = info.get('after_command')
+                if after:
+                    execute(cursor, after)
+            if inserted and not rec_id and db_module.get_lastrowid:
                 rec_id = db_module.get_lastrowid(cursor)
             result_details = []
             if rec_id:
@@ -128,20 +143,24 @@ def execute_list(cursor, db_module, command, delta_result, params, select, ddl, 
             raise Exception('server_classes execute_list: invalid argument - command: %s' % command)
     return res
 
-def execute_sql(db_module, db_database, db_user, db_password,
+def execute_sql(db_module, db_server, db_database, db_user, db_password,
     db_host, db_port, db_encoding, connection, command,
     params=None, call_proc=False, select=False, ddl=False):
 
     if connection is None:
         try:
-            connection = db_module.connect(db_database, db_user, db_password, db_host, db_port, db_encoding)
+            connection = db_module.connect(db_database, db_user, db_password, db_host, db_port, db_encoding, db_server)
         except Exception as x:
-             print(str(x))
-             return  None, (None, str(x))
+            print(str(x))
+            if ddl:
+                return  None, (None, str(x), info_from_error(x))
+            else:
+                return  None, (None, str(x))
     delta_result = {}
     messages = []
     result = None
     error = None
+    info = ''
     try:
         cursor = connection.cursor()
         if call_proc:
@@ -180,18 +199,16 @@ def execute_sql(db_module, db_database, db_user, db_password,
             connection = None
     finally:
         if ddl:
+            if error:
+                messages.append(info_from_error(error))
             if messages:
-                info = "".join(messages)
-            else:
-                info = ''
-            return connection, (result, error, info)
+                info = ''.join(messages)
+            result = connection, (result, error, info)
         else:
-            return connection, (result, error)
+            result = connection, (result, error)
+    return result
 
-
-    return connection, (result, error)
-
-def process_request(parentPID, name, queue, db_type, db_database, db_user, db_password, db_host, db_port, db_encoding, mod_count):
+def process_request(parentPID, name, queue, db_type, db_server, db_database, db_user, db_password, db_host, db_port, db_encoding, mod_count):
     con = None
     counter = 0
     db_module = db_modules.get_db_module(db_type)
@@ -213,7 +230,7 @@ def process_request(parentPID, name, queue, db_type, db_database, db_user, db_pa
                 con = None
                 mod_count = cur_mod_count
                 counter = 0
-            con, result = execute_sql(db_module, db_database, db_user, db_password,
+            con, result = execute_sql(db_module, db_server, db_database, db_user, db_password,
                 db_host, db_port, db_encoding, con, command, params, call_proc, select)
             counter += 1
             result_queue.put(result)
