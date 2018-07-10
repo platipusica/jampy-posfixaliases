@@ -6,9 +6,9 @@
 The Problem
 =============
 
-Postfix mail server can be configured with a number of virtual maps, normally files in some folder called for example domainxyz.virtual.
+Postfix mail server can be configured with a number of virtual maps, normally files in some folder called for example domainxyz.virtual (see http://www.postfix.org/postmap.1.html).
 
-In /etc/postfix/main.cf Postfix configuration, the virtual aliases files would look something like:
+In /etc/postfix/main.cf Postfix configuration, the virtual aliases files might look something like:
 
 ```
 .
@@ -17,10 +17,10 @@ virtual_alias_maps = ldap:/etc/postfix/ldap-maps.cf
   hash:/etc/postfix/virtual_maps/domain1.virtual 
   hash:/etc/postfix/virtual_maps/domain2.virtual 
   hash:/etc/postfix/virtual_maps/domain3.virtual 
+  .
+  .
+  .
   hash:/etc/postfix/virtual_maps/domainxyz.virtual 
-  .
-  .
-  
 ```
 
 The file is just a plain text file maintained by the System Administrator. The file is converted into the Postfix 'hashed' binary format with below command: 
@@ -63,6 +63,17 @@ Here, you're presented with the first Domain (Domain1) aliases. Open Catalog Men
 After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automaticaly creates the new virtual file (overwrites the old one), and executes postmap for the same file.
 
 This is still WIP so bear with me.
+
+
+How to run in *your* environment?
+==================================
+
+Download this repo, and run it. The App will be in read only mode. Change the file jam/server_classes.py and remove lines 181-184 to remove read only. If you like the App, completely remove the jam folder, install the latest Jam.py (with Python virtenv as a preference), and try the App again.
+
+If all good, add some Virtual Aliases details (like file location matching details in /etc/postfix/main.cf), and Users on Catalogs menu. After that, add some Email aliases. 
+Click on "Save" will create or overwrite domainxyz.virtual file and execute "postmap domainxyz.virtual", whatever the domainxyz is. Postfix will pickup the changes immediately.
+
+
 
 About Jam.py
 =================
@@ -113,7 +124,7 @@ With Jam.py Application Builder, you can resolve a specific business problem. Ou
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 
-Installation
+Jam.py Installation
 ------------
 
 ### Dependencies
