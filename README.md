@@ -71,8 +71,9 @@ How to run in *your* environment?
 Download this repo, and run it. The App will be in read only mode. Change the file jam/server_classes.py and remove lines 181-184 to remove read only. If you like the App, completely remove the jam folder, install the latest Jam.py (with Python virtenv as a preference), and try the App again.
 
 If all good, add some Virtual Aliases details (like file location matching details in /etc/postfix/main.cf), and Users on Catalogs menu. After that, add some Email aliases. 
-Click on "Save" will create or overwrite domainxyz.virtual file and execute "postmap domainxyz.virtual", whatever the domainxyz is. Postfix will pickup the changes immediately.
+Click on "Save" will create or overwrite domainxyz.virtual file and execute "postmap domainxyz.virtual", whatever the domainxyz is. Postfix will pickup the changes immediately. 
 
+The above is based on assumption that the App runs as root.  If the App is running with mod_wsgi and Apache, the OS permissions is a problem as Apache usually runs as non root user. One option is to change the permissions on files/folders to match the Apache user. 
 
 
 About Jam.py
