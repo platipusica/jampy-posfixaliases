@@ -23,7 +23,7 @@ function Events1() { // als
 		}
 		$('#container').show();
 	
-		if (!task.safe_mode || task.user_info.role_id == 1) {
+		if (!task.safe_mode || task.user_info.role_id == 1) {	
 			task.set_forms_container($("#content"));
 			task.create_menu($("#menu"), {view_first: true});
 		}
@@ -31,6 +31,19 @@ function Events1() { // als
 			$("#taskmenu").hide();
 			task.email_aliases.view($("#content"));	
 		}
+		$("#menu-right #admin a").click(function(e) {
+			var admin = [location.protocol, '//', location.host, location.pathname, 'builder.html'].join('');
+			e.preventDefault();
+			window.open(admin, '_blank');
+		});
+		$("#menu-right #about a").click(function(e) {
+			e.preventDefault();
+			task.message(
+				task.templates.find('.about'),
+				{title: 'Jam.py framework', margin: 0, text_center: true, 
+					buttons: {"OK": undefined}, center_buttons: true}
+			);
+		});
 	
 		// $(document).ajaxStart(function() { $("html").addClass("wait"); });
 		// $(document).ajaxStop(function() { $("html").removeClass("wait"); });
@@ -310,7 +323,8 @@ function Events7() { // als.journals.email_aliases
 			clearTimeout(time_out);
 			time_out = setTimeout(function() {
 					if (al.rec_count) {
-						item.open({where: {alias_path: al.id.value}});
+						item.filters.alias_path.value = al.id.value;
+						item.open(true);
 					}
 					else {
 						item.open({open_empty: true});
