@@ -54,7 +54,7 @@ The Jam.py Postfix Aliases Application is my take on solving the problem of:
 How does it work?
 =================
 
-Please visit Heroku App (WIP):
+Please visit Heroku App:
 
 http://jampy-aliases.herokuapp.com/
 
@@ -62,7 +62,7 @@ Here, you're presented with the first Domain (Domain1) aliases. Open Catalog Men
 
 After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automaticaly creates the new virtual file (overwrites the old one), and executes postmap for the same file.
 
-This is still WIP so bear with me.
+This is the first release so please bear with me.
 
 
 How to run in *your* environment?
