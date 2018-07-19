@@ -21,7 +21,7 @@ FIELD_AS = 'AS'
 LIKE = 'ILIKE'
 DESC = 'DESC NULLS LAST'
 
-JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, BLOB, KEYS = range(1, 10)
+JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, LONGTEXT, KEYS = range(1, 10)
 FIELD_TYPES = {
     INTEGER: 'INTEGER',
     TEXT: 'VARCHAR',
@@ -30,8 +30,8 @@ FIELD_TYPES = {
     DATE: 'DATE',
     DATETIME: 'TIMESTAMP',
     BOOLEAN: 'INTEGER',
-    BLOB: 'BYTEA',
-    KEYS: 'BYTEA'
+    LONGTEXT: 'TEXT',
+    KEYS: 'TEXT'
 }
 
 def connect(database, user, password, host, port, encoding, server):
@@ -54,14 +54,13 @@ def process_sql_params(params, cursor):
     for p in params:
         if type(p) == tuple:
             value, data_type = p
-            if data_type in [BLOB, KEYS]:
-                if type(value) == text_type:
-                    value = to_bytes(value, 'utf-8')
-                value = psycopg2.Binary(value)
         else:
             value = p
         result.append(value)
     return result
+
+#~ def process_sql_result(rows):
+    #~ return [list(row) for row in rows]
 
 def process_sql_result(rows):
     result = []

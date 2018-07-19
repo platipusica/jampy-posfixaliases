@@ -36,7 +36,7 @@ class SQL(object):
         if self._primary_key:
             pk = self._primary_key_field
         auto_pk = not db_module.get_lastrowid is None
-        if auto_pk and pk.raw_value:
+        if auto_pk and pk and pk.raw_value:
             if hasattr(db_module, 'set_identity_insert'):
                 info['before_command'] = db_module.set_identity_insert(self.table_name, True)
                 info['after_command'] = db_module.set_identity_insert(self.table_name, False)
@@ -212,7 +212,7 @@ class SQL(object):
                             if old != new:
                                 f_list.append([f.ID, new])
                     changes_str = json.dumps(f_list, separators=(',',':'), default=common.json_defaul_handler)
-                    changes = ('%s%s' % ('0', changes_str), common.BLOB)
+                    changes = ('%s%s' % ('0', changes_str), common.LONGTEXT)
                 elif not item.master and item.details:
                     h_del_details = []
                     for detail in item.details:
@@ -545,7 +545,8 @@ class SQL(object):
             return ''
 
     def order_clause(self, query, db_module=None):
-        if query.get('__limit') and not query.get('__order') and self._primary_key:
+        limit = query.get('__limit')
+        if limit and not query.get('__order') and self._primary_key:
             query['__order'] = [[self._field_by_name(self._primary_key).ID, False]]
         if query.get('__funcs') and not query.get('__group_by'):
             return ''
@@ -572,7 +573,10 @@ class SQL(object):
                 else:
                     func = functions.get(field.field_name.upper())
                     if func:
-                        ord_str = '"%s"' % field.db_field_name
+                        if db_module.DATABASE == 'MSSQL' and limit:
+                            ord_str = '%s(%s."%s")' %  (func, self.table_alias(), field.db_field_name)
+                        else:
+                            ord_str = '"%s"' % field.db_field_name
                     else:
                         ord_str = '%s."%s"' % (self.table_alias(), field.db_field_name)
                 if order[1]:

@@ -17,7 +17,7 @@ LEFT_OUTER_JOIN = 'OUTER LEFT JOIN "%s" AS %s'
 FIELD_AS = 'AS'
 LIKE = 'LIKE'
 
-JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, BLOB, KEYS = range(1, 10)
+JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, LONGTEXT, KEYS = range(1, 10)
 FIELD_TYPES = {
     INTEGER: 'INTEGER',
     TEXT: 'TEXT',
@@ -26,7 +26,7 @@ FIELD_TYPES = {
     DATE: 'TEXT',
     DATETIME: 'TEXT',
     BOOLEAN: 'INTEGER',
-    BLOB: 'BLOB',
+    LONGTEXT: 'TEXT',
     KEYS: 'TEXT'
 }
 
@@ -152,6 +152,12 @@ def restart_sequence_sql(table_name, value):
 
 def identifier_case(name):
     return name.upper()
+
+def set_foreign_keys(value):
+    if value:
+        return 'PRAGMA foreign_keys=on'
+    else:
+        return 'PRAGMA foreign_keys=off'
 
 def get_table_names(connection):
     cursor = connection.cursor()

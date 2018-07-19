@@ -21,7 +21,7 @@ LEFT_OUTER_JOIN = 'LEFT OUTER JOIN "%s" AS %s'
 FIELD_AS = 'AS'
 LIKE = 'LIKE'
 
-JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, BLOB, KEYS = range(1, 10)
+JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, LONGTEXT, KEYS = range(1, 10)
 FIELD_TYPES = {
     INTEGER: 'INT',
     TEXT: 'NVARCHAR',
@@ -30,16 +30,16 @@ FIELD_TYPES = {
     DATE: 'DATE',
     DATETIME: 'DATETIME',
     BOOLEAN: 'INT',
-    BLOB: 'IMAGE',
-    KEYS: 'TEXT'
+    LONGTEXT: 'NVARCHAR(MAX)',
+    KEYS: 'NVARCHAR(MAX)'
 }
 
 def connect(database, user, password, host, port, encoding, server):
-    #~ return pymssql.connect(server=r'.\SQLEXPRESS', user=r'sa', password=r'1111', database=r'test', port=1433, host='127.0.0.1')
     if encoding:
-		return pymssql.connect(server=server, database=database, user=user, password=password, host=host, port=port, charset=encoding)
+        return pymssql.connect(server=server, database=database, user=user, password=password, host=host, port=port, charset=encoding)
     else:
         return pymssql.connect(server=server, database=database, user=user, password=password, host=host, port=port)
+
 def get_lastrowid(cursor):
     return cursor.lastrowid
 
@@ -60,16 +60,17 @@ def get_fields(query, fields, alias):
     return sql
 
 def get_select(query, fields_clause, from_clause, where_clause, group_clause, order_clause, fields):
-    end = ''.join([from_clause, where_clause, group_clause])
     offset = query['__offset']
     limit = query['__limit']
     if limit:
+        end = ''.join([from_clause, where_clause, group_clause])
         offset += 1
         limit += offset
         flds = get_fields(query, fields, 'b')
         result = "SELECT %s FROM (SELECT %s, ROW_NUMBER() OVER (%s) AS RowNum FROM %s) AS b WHERE RowNum >= %s AND RowNum < %s ORDER BY RowNum" % \
             (flds, fields_clause, order_clause, end, offset, limit)
     else:
+        end = ''.join([from_clause, where_clause, group_clause, order_clause])
         result = 'SELECT %s FROM %s' % (fields_clause, end)
     return result
 
@@ -78,9 +79,6 @@ def process_sql_params(params, cursor):
     for p in params:
         if type(p) == tuple:
             value, data_type = p
-            if data_type in [BLOB, KEYS]:
-                if type(value) == text_type:
-                    value = to_bytes(value, 'utf-8')
         else:
             value = p
         result.append(value)
@@ -88,20 +86,7 @@ def process_sql_params(params, cursor):
 
 
 def process_sql_result(rows):
-    result = []
-    for row in rows:
-        fields = []
-        for field in row:
-            if PY2:
-                if type(field) == buffer:
-                    field = str(field)
-            else:
-                if type(field) == memoryview:
-                    field = to_unicode(to_bytes(field, 'utf-8'), 'utf-8')
-            fields.append(field)
-        result.append(fields)
-    return result
-
+    return [list(row) for row in rows]
 
 def cast_date(date_str):
     return "CAST('" + date_str + "' AS DATE)"
@@ -117,11 +102,11 @@ def upper_function():
 
 def set_identity_insert(table_name, on):
     if on:
-	    suffix = 'ON'
+        suffix = 'ON'
     else:
         suffix = 'OFF'
     return 'SET IDENTITY_INSERT %s %s' % (table_name, suffix)
-	
+
 def create_table_sql(table_name, fields, gen_name=None, foreign_fields=None):
     result = []
     sql = 'CREATE TABLE "%s"\n(\n' % table_name
@@ -229,37 +214,37 @@ def get_table_names(connection):
         result.append(r[0])
     return result
 
-
-def get_table_info(connection, table_name):
+def get_table_info(connection, table_name, db_name):
     cursor = connection.cursor()
     sql = '''
             SELECT
                 COLUMN_NAME,
                 DATA_TYPE,
                 CHARACTER_MAXIMUM_LENGTH,
-                COLUMN_DEFAULT
+                COLUMN_DEFAULT,
+                COLUMNPROPERTY(object_id(TABLE_SCHEMA+'.'+TABLE_NAME), COLUMN_NAME, 'IsIdentity')
             FROM
-              INFORMATION_SCHEMA.COLUMNS
+                INFORMATION_SCHEMA.COLUMNS
             WHERE
               TABLE_NAME = '%s'
           '''
     cursor.execute(sql % (table_name))
     result = cursor.fetchall()
     fields = []
-    for column_name, data_type, character_maximum_length, column_default in result:
-        if data_type in (char, varchar, text, nchar, nvarchar):
-            data_type = nvarchar
-        if data_type in (text, ntext):
-            data_type = ntext
-        if data_type in (binary, varbinary, image):
-            data_type = image
-        if data_type in (bit, tinyint, smallint, int):
-            data_type = int
-        if data_type in (bigint, decimal, dec, numeric, float, real, smallmoney, money):
-            data_type = numeric
-        if data_type in (datetime, datetime2, smalldatetime, datetimeoffset, time):
-            data_type = datetime
-
+    for column_name, data_type, character_maximum_length, column_default, itent in result:
+        #~ data_type = data.lower()
+        #~ if data_type in ('char', 'varchar', 'nchar', 'nvarchar'):
+            #~ data_type = nvarchar
+        #~ if data_type in (text, ntext):
+            #~ data_type = ntext
+        #~ if data_type in (binary, varbinary, image):
+            #~ data_type = image
+        #~ if data_type in (bit, tinyint, smallint, int):
+            #~ data_type = int
+        #~ if data_type in (bigint, decimal, dec, numeric, float, real, smallmoney, money):
+            #~ data_type = numeric
+        #~ if data_type in (datetime, datetime2, smalldatetime, datetimeoffset, time):
+            #~ data_type = datetime
         size = 0
         if character_maximum_length:
             size = character_maximum_length
@@ -267,6 +252,8 @@ def get_table_info(connection, table_name):
         if column_default:
             default_value = column_default[1 : -1]  ## !!! NOTE -- THIS SHOULD BE DEBUG
         pk = False
+        if itent == 1:
+            pk = True
         fields.append({
             'field_name': column_name,
             'data_type': data_type.upper(),
@@ -275,56 +262,3 @@ def get_table_info(connection, table_name):
             'pk': pk
         })
     return {'fields': fields, 'field_types': FIELD_TYPES}
-
-    #~ sql = '''
-            #~ SELECT
-                #~ I.INDEX_ID INDEX_IN,
-                #~ I.NAME INDEX_NAME,
-                #~ C.NAME COLUMN_NAME,
-                #~ I.IS_PRIMARY_KEY IS_PRI,
-                #~ I.IS_UNIQUE IS_UNI,
-                #~ IC.IS_DESCENDING_KEY IS_DESC,
-                #~ IC.KEY_ORDINAL KEY_ORD
-            #~ FROM
-                #~ SYS.TABLES T
-            #~ INNER JOIN SYS.INDEXES I ON
-                #~ I.OBJECT_ID = T.OBJECT_ID
-            #~ INNER JOIN SYS.INDEX_COLUMNS IC ON
-                #~ IC.OBJECT_ID = T.OBJECT_ID
-            #~ INNER JOIN SYS.COLUMNS C ON
-                #~ C.OBJECT_ID = T.OBJECT_ID
-                #~ AND IC.INDEX_ID = I.INDEX_ID
-                #~ AND IC.COLUMN_ID = C.COLUMN_ID
-            #~ WHERE
-                #~ 1 = 1 AND T.NAME = '%s'
-            #~ ORDER BY
-                #~ T.NAME,
-                #~ I.INDEX_ID,
-                #~ IC.KEY_ORDINAL
-        #~ '''
-
-    #~ cursor.execute(sql % (table_name))
-    #~ result = cursor.fetchall()
-    #~ index = []
-    #~ indexes = {}
-    #~ for index_id, index_name, column_name, is_primary, is_unique, desc, ordinal_position in result:
-        #~ if is_primary:
-            #~ for f in fields:
-                #~ if f['field_name'] == column_name:
-                    #~ f['pk'] = True
-        #~ else:
-            #~ column_name = column_name.strip('"').strip("'")
-            #~ if not index:
-                #~ index = {
-                    #~ 'index_name': index_name,
-                    #~ 'unique': is_unique,
-                    #~ 'fields': []
-                #~ }
-                #~ indexes[index_name] = index
-            #~ index['fields'].append([column_name, desc])
-    #~ ind = []
-    #~ indexes.values()
-    #~ for key, value in iteritems(indexes):
-        #~ ind.append(value)
-    #~ return {'fields': fields, 'indexes': ind}
-

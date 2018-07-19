@@ -19,7 +19,7 @@ LEFT_OUTER_JOIN = 'LEFT OUTER JOIN "%s" AS %s'
 FIELD_AS = 'AS'
 LIKE = 'LIKE'
 
-JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, BLOB, KEYS = range(1, 10)
+JAM_TYPES = TEXT, INTEGER, FLOAT, CURRENCY, DATE, DATETIME, BOOLEAN, LONGTEXT, KEYS = range(1, 10)
 FIELD_TYPES = {
     INTEGER: 'INTEGER',
     TEXT: 'VARCHAR',
@@ -28,7 +28,7 @@ FIELD_TYPES = {
     DATE: 'DATE',
     DATETIME: 'TIMESTAMP',
     BOOLEAN: 'INTEGER',
-    BLOB: 'BLOB',
+    LONGTEXT: 'BLOB',
     KEYS: 'BLOB'
 }
 
@@ -58,7 +58,7 @@ def process_sql_params(params, cursor):
     for p in params:
         if type(p) == tuple:
             value, data_type = p
-            if data_type in [BLOB, KEYS]:
+            if data_type in [LONGTEXT, KEYS]:
                 if type(value) == text_type:
                     value = to_bytes(value, 'utf-8')
         else:

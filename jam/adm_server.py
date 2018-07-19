@@ -155,10 +155,10 @@ def create_items(task):
     task.sys_items.add_field(13, 'f_view_template', task.language('report_template'), common.TEXT, size=256)
     task.sys_items.add_field(14, 'f_visible', task.language('visible'), common.BOOLEAN)
     task.sys_items.add_field(15, 'f_soft_delete', task.language('soft_delete'), common.BOOLEAN)
-    task.sys_items.add_field(16, 'f_client_module', task.language('client_module'), common.BLOB, visible=False, edit_visible=False)
-    task.sys_items.add_field(17, 'f_web_client_module', task.language('client_module'), common.BLOB, visible=False, edit_visible=False)
-    task.sys_items.add_field(18, 'f_server_module', task.language('server_module'), common.BLOB, visible=False, edit_visible=False)
-    task.sys_items.add_field(19, 'f_info', 'Info', common.BLOB, visible=False, edit_visible=False)
+    task.sys_items.add_field(16, 'f_client_module', task.language('client_module'), common.LONGTEXT, visible=False, edit_visible=False)
+    task.sys_items.add_field(17, 'f_web_client_module', task.language('client_module'), common.LONGTEXT, visible=False, edit_visible=False)
+    task.sys_items.add_field(18, 'f_server_module', task.language('server_module'), common.LONGTEXT, visible=False, edit_visible=False)
+    task.sys_items.add_field(19, 'f_info', 'Info', common.LONGTEXT, visible=False, edit_visible=False)
     task.sys_items.add_field(20, 'f_virtual_table', task.language('virtual_table'), common.BOOLEAN)
     task.sys_items.add_field(21, 'f_js_external', task.language('js_external'), common.BOOLEAN)
     task.sys_items.add_field(22, 'f_js_filename', 'js_file_name', common.TEXT, size=1024)
@@ -166,7 +166,7 @@ def create_items(task):
     task.sys_items.add_field(24, 'f_deleted_flag', task.language('deleted_flag'), common.INTEGER, False, task.sys_fields, 'f_field_name')
     task.sys_items.add_field(25, 'f_master_id', task.language('master_id'), common.INTEGER, False, task.sys_fields, 'f_field_name')
     task.sys_items.add_field(26, 'f_master_rec_id', task.language('master_rec_id'), common.INTEGER, False, task.sys_fields, 'f_field_name')
-    task.sys_items.add_field(27, 'f_js_funcs', 'f_js_funcs', common.BLOB, visible=False, edit_visible=False)
+    task.sys_items.add_field(27, 'f_js_funcs', 'f_js_funcs', common.LONGTEXT, visible=False, edit_visible=False)
     task.sys_items.add_field(28, 'f_keep_history', task.language('history'), common.BOOLEAN)
     task.sys_items.add_field(29, 'f_edit_lock', 'Edit lock', common.BOOLEAN)
     task.sys_items.add_field(30, 'sys_id', 'sys_id', common.INTEGER)
@@ -203,7 +203,7 @@ def create_items(task):
     task.sys_lookup_lists.add_field(1, 'id', 'ID', common.INTEGER, visible=False, edit_visible=False)
     task.sys_lookup_lists.add_field(2, 'deleted', 'Deleted flag', common.INTEGER, visible=False, edit_visible=False)
     task.sys_lookup_lists.add_field(3, 'f_name', task.language('name'), common.TEXT, required=True, size=256)
-    task.sys_lookup_lists.add_field(4, 'f_lookup_values_text', 'Text to store lookup_values',  common.BLOB)
+    task.sys_lookup_lists.add_field(4, 'f_lookup_values_text', 'Text to store lookup_values',  common.LONGTEXT)
 
     task.sys_field_lookups = task.sys_tables.add_table('sys_field_lookups', 'Lookup item', 'SYS_FIELD_LOOKUPS')
 
@@ -237,7 +237,7 @@ def create_items(task):
     task.sys_fields.add_field(23, 'f_read_only',    task.language('read_only'), common.BOOLEAN)
     task.sys_fields.add_field(24, 'f_alignment',    task.language('alignment'), common.INTEGER, lookup_values=get_value_list(common.ALIGNMENT))
     task.sys_fields.add_field(25, 'f_default_value', task.language('default_value'), common.TEXT, False,  False, size =256)
-    task.sys_fields.add_field(26, 'f_help',          task.language('help'), common.BLOB, visible=False)
+    task.sys_fields.add_field(26, 'f_help',          task.language('help'), common.LONGTEXT, visible=False)
     task.sys_fields.add_field(27, 'f_placeholder',   task.language('placeholder'), common.TEXT, visible=False, size=256)
     task.sys_fields.add_field(28, 'f_mask',  'Mask', common.TEXT, visible=False, size=30)
 
@@ -275,7 +275,7 @@ def create_items(task):
     task.sys_report_params.add_field(20, 'f_visible',      task.language('visible'),    common.BOOLEAN)
     task.sys_report_params.add_field(21, 'f_alignment',    task.language('alignment'), common.INTEGER, lookup_values=get_value_list(common.ALIGNMENT))
     task.sys_report_params.add_field(22, 'f_master_field', task.language('master_field'), common.INTEGER, False, task.sys_fields, 'f_field_name')
-    task.sys_report_params.add_field(23, 'f_help',         task.language('help'), common.BLOB, visible=False)
+    task.sys_report_params.add_field(23, 'f_help',         task.language('help'), common.LONGTEXT, visible=False)
     task.sys_report_params.add_field(24, 'f_placeholder',  task.language('placeholder'), common.TEXT, visible=False, size=256)
 
     task.sys_report_params.add_filter('owner_rec_id', 'Owner rec ID ', 'owner_rec_id', common.FILTER_EQ, visible=False)
@@ -315,7 +315,7 @@ def create_items(task):
     task.sys_filters.add_field(11, 'f_type',      task.language('filter_type'), common.INTEGER, False, lookup_values=get_value_list(common.FILTER_STRING))
     task.sys_filters.add_field(12, 'f_multi_select_all', task.language('multi_select_all'),  common.BOOLEAN)
     task.sys_filters.add_field(13, 'f_visible',   task.language('visible'),    common.BOOLEAN)
-    task.sys_filters.add_field(14, 'f_help',      task.language('help'), common.BLOB, visible=False)
+    task.sys_filters.add_field(14, 'f_help',      task.language('help'), common.LONGTEXT, visible=False)
     task.sys_filters.add_field(15, 'f_placeholder', task.language('placeholder'), common.TEXT, visible=False, size=256)
 
 
@@ -1154,6 +1154,7 @@ def server_export_task(task, task_id, url=None):
             common.zip_dir(os.path.join('static', 'img'), zip_file)
             common.zip_dir(os.path.join('static', 'js'), zip_file)
             common.zip_dir(os.path.join('static', 'css'), zip_file)
+            common.zip_dir(os.path.join('static', 'fonts'), zip_file)
             common.zip_dir('utils', zip_file, exclude_ext=['.pyc'])
             common.zip_dir('reports', zip_file, exclude_ext=['.xml', '.ods#'], recursive=False)
         if url:
@@ -1446,7 +1447,7 @@ def import_metadata(task, task_id, file_name, from_client=False):
     def get_fk_ind():
         fk = {}
         if db_type == db_modules.SQLITE:
-            indexes = new_items['sys_indices']
+            indexes = new_dict['sys_indices']
             for ind in indexes:
                 if ind.f_foreign_index.value:
                     dic = get_foreign_key_dict(ind)
@@ -1548,9 +1549,9 @@ def import_metadata(task, task_id, file_name, from_client=False):
     def project_empty():
         items = task.sys_items.copy(handlers=False)
         items.set_where(task_id=task_id)
-        items.open(fields=['id', 'table_name'])
+        items.open(fields=['id', 'f_table_name'])
         for i in items:
-            if i.table_name.value:
+            if i.f_table_name.value:
                 return False
         return True
 
@@ -1572,8 +1573,8 @@ def import_metadata(task, task_id, file_name, from_client=False):
 
     db_type = get_db_type(task)
     if db_type == db_modules.SQLITE and not project_empty():
-        error = 'Only empty SQLITE projects could be imported.'
-        show_info(error)
+        error = 'Metadata can not be imported into an existing SQLITE project'
+        show_progress(error)
         return False, error, task.__import_message
     task.app.under_maintenance = True
     success = False
@@ -1917,14 +1918,14 @@ def get_field_dict(task, item_id, parent_id, type_id, table_id):
 
 def server_get_task_dict(task):
 
-    def get_children(items, id_value, type_id, dict, key, parent_id=None):
+    def get_children(items, id_value, type_id, dict, key, parent_id, item_fields):
         childs = {}
         if type_id in (common.TASK_TYPE, common.ITEMS_TYPE,
             common.TABLES_TYPE, common.REPORTS_TYPE):
             for it in items:
                 if it.parent.value == id_value:
-                        clone = items.clone()
-                        get_children(clone, it.id.value, it.type_id.value, childs, it.f_item_name.value, it.parent.value)
+                    clone = items.clone()
+                    get_children(clone, it.id.value, it.type_id.value, childs, it.f_item_name.value, it.parent.value, item_fields)
         else:
             fields = []
             f = f_dict.get(id_value)
@@ -1935,6 +1936,7 @@ def server_get_task_dict(task):
                 fields += f
             for f in fields:
                 childs[f] = None
+            item_fields[id_value] = childs
         dict[key] = childs
 
     it = task.sys_items.copy(handlers=False)
@@ -1965,8 +1967,9 @@ def server_get_task_dict(task):
             f_dict[f.owner_rec_id.value] = d
         d.append(f.f_param_name.value)
 
-    get_children(items, task_id, common.TASK_TYPE, result, 'task')
-    return result['task']
+    item_fields = {}
+    get_children(items, task_id, common.TASK_TYPE, result, 'task', None, item_fields)
+    return result['task'], item_fields
 
 def server_item_info(task, item_id, is_server):
     result = {}
@@ -2479,26 +2482,30 @@ def indexes_get_table_names(indexes):
 
 def drop_indexes_sql(task):
     db_type = get_db_type(task)
+    db_module = db_modules.get_db_module(db_type)
     indexes = task.sys_indices.copy(handlers=False)
     indexes.open()
     table_names = indexes_get_table_names(indexes)
     sqls = []
     for i in indexes:
-        table_name = table_names.get(i.owner_rec_id.value)
-        if table_name:
-            sqls.append(i.delete_index_sql(db_type, table_name))
+        if not (i.f_foreign_index.value and db_module.DATABASE == 'SQLITE'):
+            table_name = table_names.get(i.owner_rec_id.value)
+            if table_name:
+                sqls.append(i.delete_index_sql(db_type, table_name))
     return sqls
 
 def restore_indexes_sql(task):
     db_type = get_db_type(task)
+    db_module = db_modules.get_db_module(db_type)
     indexes = task.sys_indices.copy(handlers=False)
     indexes.open()
     table_names = indexes_get_table_names(indexes)
     sqls = []
     for i in indexes:
-        table_name = table_names.get(i.owner_rec_id.value)
-        if table_name:
-            sqls.append(i.create_index_sql(db_type, table_name))
+        if not (i.f_foreign_index.value and db_module.DATABASE == 'SQLITE'):
+            table_name = table_names.get(i.owner_rec_id.value)
+            if table_name:
+                sqls.append(i.create_index_sql(db_type, table_name))
     return sqls
 
 ###############################################################################

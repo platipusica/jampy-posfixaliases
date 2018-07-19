@@ -739,7 +739,7 @@ class Consts(object):
         self.DATE = common.DATE
         self.DATETIME = common.DATETIME
         self.BOOLEAN = common.BOOLEAN
-        self.BLOB = common.BLOB
+        self.LONGTEXT = common.LONGTEXT
 
         self.ITEM_FIELD = common.ITEM_FIELD
         self.FILTER_FIELD = common.FILTER_FIELD
@@ -984,6 +984,11 @@ class Task(AbstractServerTask):
         for key, value in iteritems(self.__dict__):
             self.init_dict[key] = value
 
+    def get_safe_mode(self):
+        return self.app.admin.safe_mode
+
+    safe_mode = property (get_safe_mode)
+
     def drop_indexes(self):
         from jam.adm_server import drop_indexes_sql
         sqls = drop_indexes_sql(self.app.admin)
@@ -1023,6 +1028,8 @@ class Task(AbstractServerTask):
         db_module = db_modules.get_db_module(dbtype)
         print('copying droping indexes')
         self.drop_indexes()
+        if hasattr(self.db_module, 'set_foreign_keys'):
+            self.execute(self.db_module.set_foreign_keys(False))
         try:
             for group in self.items:
                 for it in group.items:
@@ -1077,6 +1084,8 @@ class Task(AbstractServerTask):
         finally:
             print('copying restoring indexes')
             self.restore_indexes()
+            if hasattr(self.db_module, 'set_foreign_keys'):
+                self.execute(self.db_module.set_foreign_keys(True))
         print('copying finished')
 
 
