@@ -23,7 +23,7 @@ function Events1() { // als
 		}
 		$('#container').show();
 	
-		if (task.user_info.role_id == 1) {	
+		if (!task.safe_mode || task.user_info.role_id == 1) {
 			task.set_forms_container($("#content"));
 			task.create_menu($("#menu"), {view_first: true});
 		}
@@ -305,6 +305,7 @@ function Events7() { // als.journals.email_aliases
 			item.aliases.alias.value = aliases[i][1];
 			item.aliases.post();
 		}
+		item.aliases.first();
 		item.aliases.on_after_scroll = function(al) {
 			clearTimeout(time_out);
 			time_out = setTimeout(function() {
@@ -321,6 +322,9 @@ function Events7() { // als.journals.email_aliases
 		item.aliases.on_after_scroll(item.aliases);
 		
 		item.create_table(item.view_form.find(".view-detail"), {height: height});
+		item.add_button(item.view_form.find(".form-footer"), 'Save').click(function() {
+			item.server('save_to_file', [item.alias_path.value]);
+		});
 	}
 	
 	function on_before_post(item) {
