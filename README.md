@@ -58,7 +58,7 @@ Please visit Heroku App:
 
 http://jampy-aliases.herokuapp.com/
 
-Here, you're presented with the first Domain (Domain1) aliases. Open Catalog Menu and select Domain2, etc. On the Admin Menu is everthing what normal User shouldn't access, Footers, Headers and Files Path. The File Path here is just an example for each Domain in question. We need a Header to *Warn* the console users who might manually update the file, and we also need Footer to add any extra aliases normal User can't see (like mailman aliases, etc).
+Here, you're presented with the Domain Email Aliases. On the Catalogs Menu is everthing what normal User shouldn't access, Footers, Headers, Files Path and Users. The File Path here is just an example for each Domain in question. We need a Header to *Warn* the console users who might manually update the file, and we also need Footer to add any extra aliases normal User can't see (like mailman aliases, etc).
 
 After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automaticaly creates the new virtual file (overwrites the old one), and executes postmap for the same file.
 
@@ -74,7 +74,7 @@ aliases go in here:
 # This entry must be the last entry in the file !!!     <-- this is a Footer
 # Catch-all for non-existent Addresses                  <-- this is a Footer
 # WARNING WARNING WARNING                               <-- this is a Footer
-@doman3.com	devnull                                     <-- this is a Footer
+@doman3.com	devnull                                      <-- this is a Footer
 ```
 
 and it would be written in /etc/postfix/virtual_maps/ folder. The 'hashed' file would be created there as well.
