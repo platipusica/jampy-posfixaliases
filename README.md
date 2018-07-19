@@ -62,7 +62,24 @@ Here, you're presented with the first Domain (Domain1) aliases. Open Catalog Men
 
 After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automaticaly creates the new virtual file (overwrites the old one), and executes postmap for the same file.
 
-This is the first release so please bear with me.
+The file domain3.virtual would look like:
+
+```
+#WARNING GENERATED FILE...                              <-- this is a file Header
+aliases go in here:
+.
+.
+
+# WARNING WARNING WARNING                               <-- this is a file Footer
+# This entry must be the last entry in the file !!!     <-- this is a Footer
+# Catch-all for non-existent Addresses                  <-- this is a Footer
+# WARNING WARNING WARNING                               <-- this is a Footer
+@doman3.com	devnull                                     <-- this is a Footer
+```
+
+and it would be written in /etc/postfix/virtual_maps/ folder. The 'hashed' file would be created there as well.
+
+This is the first release so please bear with me if there are any inconsistencies.
 
 
 How to run in *your* environment?
