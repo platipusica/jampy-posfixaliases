@@ -85,13 +85,18 @@ This is the first release so please bear with me if there are any inconsistencie
 How to run in *your* environment?
 ==================================
 
-Download this repo, and run it. The App will be in read only mode. Change the file jam/server_classes.py and remove lines 181-184 to remove read only. If you like the App, completely remove the jam folder, install the latest Jam.py (with Python virtenv as a preference), and try the App again.
+Download this repo, and run it. The App will be in read only mode. Change the file jam/server_classes.py and remove lines 194-198 to remove read only. If you like the App, completely remove the jam folder, which is here only for r/o App, install the latest Jam.py (with Python virtenv as a preference), and try the App again.
 
 If all good, add some Virtual Aliases details (like file location matching details in /etc/postfix/main.cf), and Users on Catalogs menu. After that, add some Email aliases. 
-Click on "Save" will create or overwrite domainxyz.virtual file and execute "postmap domainxyz.virtual", whatever the domainxyz is. Postfix will pickup the changes immediately. 
+Click on "Save" will create or overwrite domainxyz.virtual file and execute "postmap domainxyz.virtual", whatever the domainxyz is. Postfix will pickup the changes immediately. This code is commented out atm, and you can find it in Task Server module when open App Bulder on Demo.
 
 The above is based on assumption that the App runs as root.  If the App is running with mod_wsgi and Apache, the OS permissions is a problem as Apache usually runs as non root user. One option is to change the permissions on files/folders to match the Apache user. For sure *all* Apache files can be overwritten with this way. The other option might include writing files somewhere, and picking the files by cron. 
 
+Further Enhancements 
+=================
+
+Further enhancements would be beneficial like having a Dashboard with aliases analytics. Also the custom reports with the same.
+The AD authentication is supported out of the box. Please raise an request with a Python version needed and will be emailed to you.
 
 About Jam.py
 =================
@@ -190,7 +195,7 @@ Navigate to jam.py installation demo folder, enter the command:
 python server.py
 ```
 
-You'll have the Demo App running at http://localhost:8001
+You'll have the Demo App running at http://localhost:8080
 
 ## Create a new App
 
@@ -200,7 +205,7 @@ cd newapp
 jam-project.py
 python server.py
 ```
-The new and empty App will run at http://localhost:8001
+The new and empty App will run at http://localhost:8080
 
 Please visit http://jam-py.com/docs/intro/index.html for complete Getting Started Introduction.
 
