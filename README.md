@@ -107,7 +107,12 @@ How was this Demo published on Heroku?
 ------------------------------------
 The Aliases App you see on Heroku is just the Jam.py Project with two files added: requirements.txt and Procfile.
 
-Then the Heroku account was open, jampy App created, Git repo linked and deployed. In 10 seconds it magically appeared as a live Web site. Enjoy.
+Then the Heroku account was open, jampy App created, Git repo linked and deployed. In 10 seconds it magically appeared as a live Web site. 
+
+My second Jam.py Demo lives here: https://jampy.herokuapp.com
+The same principles apply.
+
+Enjoy.
 
 
 Why using Jam.py?
