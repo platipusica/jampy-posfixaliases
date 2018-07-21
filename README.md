@@ -79,6 +79,8 @@ aliases go in here:
 
 and it would be written in /etc/postfix/virtual_maps/ folder. The 'hashed' file would be created there as well.
 
+
+
 This is the first release so please bear with me if there are any inconsistencies.
 
 
@@ -86,6 +88,7 @@ How to run in *your* environment?
 ==================================
 
 Download this repo, and run it. The App will be in read only mode. Change the file jam/server_classes.py and remove lines 194-198 to remove read only. If you like the App, completely remove the jam folder, which is here only for r/o App, install the latest Jam.py (with Python virtenv as a preference), and try the App again.
+To try the user access, open Application builder, click on Parameters/Save Mode. The users are *admin* and *user* with password *111*.
 
 If all good, add some Virtual Aliases details (like file location matching details in /etc/postfix/main.cf), and Users on Catalogs menu. After that, add some Email aliases. 
 Click on "Save" will create or overwrite domainxyz.virtual file and execute "postmap domainxyz.virtual", whatever the domainxyz is. Postfix will pickup the changes immediately. This code is commented out atm, and you can find it in Task Server module when open App Builder on Demo.
