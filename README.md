@@ -95,10 +95,12 @@ Click on "Save" will create or overwrite domainxyz.virtual file and execute "pos
 
 The above is based on assumption that the App runs as root.  If the App is running with mod_wsgi and Apache, the OS permissions is a problem as Apache usually runs as non root user. One option is to change the permissions on files/folders to match the Apache user. For sure *all* Apache files can be overwritten with this way. The other option might include writing files somewhere, and picking the files by cron. 
 
+One thing to remember, nothing is really deleted in this App. Jam.py is using a flag deleted=1 in the table for *deleted* records. Plus, there is a History for any record, hence audited. For even higher protection, one could Export/Import data into a more secure database, like Oracle, Postgres, MySQL or MSSQL. Simple. 
+
 Further Enhancements 
 =================
 
-Further enhancements would be beneficial like having a Dashboard with aliases analytics. Also the custom reports with the same.
+Further enhancements would be beneficial like having a Dashboard with aliases analytics. Also the custom reports with the same or adding postfix maillog analytics would be great to have. Jam.py can definitely do that.
 The AD authentication is supported out of the box. Please raise an request with a Python version needed and will be emailed to you.
 
 About Jam.py
