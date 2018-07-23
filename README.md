@@ -100,9 +100,11 @@ One thing to remember, nothing is really deleted in this App. Jam.py is using a 
 Further Enhancements 
 =================
 
-Further enhancements would be beneficial like having a Dashboard with aliases analytics. Also the custom reports with the same or adding postfix maillog analytics would be great to have. Or regex controlled User input for the emails. Jam.py can definitely do that.
+Further enhancements would be beneficial like having a Dashboard with aliases analytics. Also the custom reports with the same or adding postfix maillog analytics (pflogsumm?), would be great to have. Or regex controlled User input for the emails. Jam.py can definitely do that.
 
 The AD authentication is supported out of the box. Please raise an request with a Python version needed and will be emailed to you.
+
+
 
 About Jam.py
 =================
