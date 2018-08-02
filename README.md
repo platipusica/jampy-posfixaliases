@@ -106,6 +106,7 @@ The AD authentication is supported out of the box. Please raise an request with 
 
 ![Example Postfix log graphs](https://github.com/platipusica/jampy-posfixaliases/blob/master/docs/Traffic_Screenshot%20from%202018-07-31%2015-20-10.png  "Example Postfix log graphs")
 
+For the above graphs to work, the read permissions needs to be set for mail log files. Since the Heroku App can't read this, we can't show the real data. Ope App Builder/Task/Groups/Analytics/Server module to see the code and changes for your logs.
 
 About Jam.py
 =================
