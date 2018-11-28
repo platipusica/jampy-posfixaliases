@@ -58,9 +58,9 @@ Please visit Heroku App:
 
 http://jampy-aliases.herokuapp.com/
 
-Here, you're presented with the Domain Email Aliases. On the Catalogs Menu is everthing what normal User shouldn't access, Footers, Headers, Files Path and Users. The File Path here is just an example for each Domain in question. We need a Header to *Warn* the console users who might manually update the file, and we also need Footer to add any extra aliases normal User can't see (like mailman aliases, etc).
+Here, you're presented with the Domain Email Aliases. On the Catalogs Menu is everything what normal User shouldn't access, Footers, Headers, Files Path and Users. The File Path here is just an example for each Domain in question. We need a Header to *Warn* the console users who might manually update the file, and we also need Footer to add any extra aliases normal User can't see (like mailman aliases, etc).
 
-After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automaticaly creates the new virtual file (overwrites the old one), and executes postmap for the same file.
+After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automatically creates the new virtual file (overwrites the old one), and executes postmap for the same file.
 
 The file domain3.virtual would look like:
 
