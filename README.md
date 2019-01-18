@@ -65,16 +65,17 @@ After some domain is updated, the new entry added, deleted or aliases disabled, 
 The file domain3.virtual would look like:
 
 ```
-#WARNING GENERATED FILE...                              <-- this is a file Header
-aliases go in here:
-.
-.
-
+#WARNING GENERATED FILE...                              <-- this is a file Header, rarely changes
+aliases go in here:                                     /\
+                                                        |
+.                                                       Changing quite often
+.                                                       |
+                                                        \/
 # WARNING WARNING WARNING                               <-- this is a file Footer
-# This entry must be the last entry in the file !!!     <-- this is a Footer
-# Catch-all for non-existent Addresses                  <-- this is a Footer
-# WARNING WARNING WARNING                               <-- this is a Footer
-@doman3.com	devnull                                      <-- this is a Footer
+# This entry must be the last entry in the file !!!     
+# Catch-all for non-existent Addresses                  
+# WARNING WARNING WARNING                               
+@doman3.com	devnull                                     <-- end of Footer, rarely changes
 ```
 
 and it would be written in /etc/postfix/virtual_maps/ folder. The 'hashed' file would be created there as well.
