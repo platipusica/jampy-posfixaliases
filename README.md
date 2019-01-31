@@ -58,6 +58,7 @@ Please visit Heroku App:
 
 http://jampy-aliases.herokuapp.com/
 
+
 Here, you're presented with the Domain Email Aliases. On the Catalogs Menu is everything what normal User shouldn't access, Footers, Headers, Files Path and Users. The File Path here is just an example for each Domain in question. We need a Header to *Warn* the console users who might manually update the file, and we also need Footer to add any extra aliases normal User can't see (like mailman aliases, etc).
 
 After some domain is updated, the new entry added, deleted or aliases disabled, by click on "Save", the Application automatically creates the new virtual file (overwrites the old one), and executes postmap for the same file.
@@ -111,6 +112,7 @@ For the above graphs to work, the read permissions needs to be set for mail log 
 
 About Jam.py
 =================
+To get you going with Jam.py 4.x, please visit https://goo.gl/j81uDW for short 13 slides presentation.
 
 With Jam.py you can create, customise, test and share awesome, fast, event-driven applications for SQLite, Oracle, MySQL, PostgreSQL and Firebird. All of that for free and no vendor lock-in!
 
@@ -120,7 +122,9 @@ The Aliases App you see on Heroku is just the Jam.py Project with two files adde
 
 Then the Heroku account was open, jampy App created, Git repo linked and deployed. In 10 seconds it magically appeared as a live Web site. 
 
-My second Jam.py Demo lives here: https://jampy.herokuapp.com
+My second Jam.py App lives here: https://redhatsatellite.herokuapp.com
+My third Jam.py App lives here: https://sambashares.herokuapp.com
+
 The same principles apply.
 
 Enjoy.
