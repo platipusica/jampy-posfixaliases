@@ -351,4 +351,90 @@ function Events7() { // als.journals.email_aliases
 
 task.events.events7 = new Events7();
 
+function Events12() { // als.analytics.dashboard 
+
+	function on_view_form_created(item) {
+		var info = item.server('get_chart_info');
+		show_messages(item, info.messages, item.view_form.find('#chart1canvas').get(0).getContext('2d'));
+		show_traffic(item, info.traffic, item.view_form.find('#chart2canvas').get(0).getContext('2d'));
+	}
+	
+	function show_messages(item, messages, ctx) {
+		var i,
+			labels = [],
+			data = [],
+			options = {
+				scales: {
+					xAxes: [{
+						gridLines: {
+							display: false
+						}					   
+					}],
+					yAxes: [{
+						barThickness : 20,
+						gridLines: {
+							display: false
+						},					   
+						ticks: {
+							beginAtZero:true
+						}					
+					}]
+				}		
+			},
+			color = '#0088cc';
+		for (i = 0; i < messages.length; i++) {
+			labels.push(messages[i][1]);
+			data.push(messages[i][0]);
+			// data.push(i);
+		}
+		draw_chart(item, ctx, 'horizontalBar', labels, data, 'Messages', color, options);
+	}
+	
+	function show_traffic(item, traffic, ctx) {
+		var i,
+			labels = [],
+			data = [],
+			color = '#0088cc';
+		for (i = 0; i < traffic.length; i++) {
+			labels.push(i + '-' + (i + 1));
+			data.push(traffic[i][1]);		
+			// data.push(i);
+	
+		}
+		draw_chart(item, ctx, 'bar', labels, data, 'Traffic', color);
+	}
+	
+	function draw_chart(item, ctx, type, labels, data, title, color, options) {
+		var default_options = {
+				 title: {
+					display: true,
+					fontsize: 14,
+					text: title
+				},
+				legend: { display: false }
+		};
+		if (!options) options = {};
+		options = $.extend({}, default_options, options);
+		new Chart(ctx,{
+			type: type,
+			data: {
+				labels: labels,
+				datasets: [
+					{
+						data: data,
+						backgroundColor: color
+					}
+				]					
+			},
+			options: options
+		});
+	}
+	this.on_view_form_created = on_view_form_created;
+	this.show_messages = show_messages;
+	this.show_traffic = show_traffic;
+	this.draw_chart = draw_chart;
+}
+
+task.events.events12 = new Events12();
+
 })(jQuery, task)
